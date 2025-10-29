@@ -1,0 +1,34 @@
+{
+    "2025-10": {
+        "income": 4000.0,
+        "expenses": [
+            {
+                "Category": "Food",
+                "Amount": 500
+            },
+            {
+                "Category": "Transport",
+                "Amount": 400
+            },
+            {
+                "Category": "Entertainment",
+                "Amount": 30
+            },
+            {
+                "Category": "Shopping",
+                "Amount": 4000
+            },
+            {
+                "Category": "Rent",
+                "Amount": 450
+            },
+            {
+                "Category": "Utilities",
+                "Amount": 0
+            }
+        ],
+        "savings": -1380.0,
+        "savings_rate": -34.5,
+        "saved_on": "2025-10-29 23:02:38"
+    }
+}

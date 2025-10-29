@@ -1,0 +1,62 @@
+import streamlit as st
+import pandas as pd
+import numpy as np
+import plotly.express as px
+from sklearn.linear_model import LinearRegression
+
+st.set_page_config(page_title="SmartSpend", layout="wide")
+
+st.title("💰 SmartSpend: AI-Powered Personal Finance Tracker")
+
+# --- INPUT SECTION ---
+st.header("Enter Your Monthly Details")
+
+income = st.number_input("Enter your Monthly Income (₹)", min_value=0, step=100)
+
+st.subheader("Enter Your Expenses")
+categories = ["Rent", "Food", "Transportation", "Entertainment", "Utilities", "Other"]
+expenses = {}
+for cat in categories:
+    expenses[cat] = st.number_input(f"{cat} Expense", min_value=0, step=100)
+
+if st.button("Generate Report"):
+    df = pd.DataFrame(list(expenses.items()), columns=["Category", "Expense"])
+    total_expense = df["Expense"].sum()
+    savings = income - total_expense
+    saving_percent = (savings / income * 100) if income else 0
+
+    st.success(f"💸 Total Expenses: ₹{total_expense}")
+    st.info(f"💰 Savings: ₹{savings} ({saving_percent:.2f}% of income)")
+
+    # --- CHARTS ---
+    col1, col2 = st.columns(2)
+    with col1:
+        fig1 = px.pie(df, values="Expense", names="Category", title="Expense Breakdown by Category")
+        st.plotly_chart(fig1)
+    with col2:
+        fig2 = px.bar(df, x="Category", y="Expense", title="Spending by Category", color="Category")
+        st.plotly_chart(fig2)
+
+    # --- AI PREDICTION (Mock Linear Regression for simplicity) ---
+    prev_data = np.array([total_expense * (0.9 + i*0.05) for i in range(3)]).reshape(-1, 1)
+    months = np.array([[1], [2], [3]])
+    model = LinearRegression().fit(months, prev_data)
+    next_month_pred = model.predict([[4]])[0][0]
+
+    st.subheader("🔮 AI Prediction")
+    st.write(f"Predicted Spending Next Month: ₹{next_month_pred:.2f}")
+
+    change = ((next_month_pred - total_expense) / total_expense * 100)
+    if change > 0:
+        st.warning(f"Expected Increase of {change:.2f}% next month. Consider saving more.")
+    else:
+        st.success(f"Expected Decrease of {abs(change):.2f}% next month. Great job!")
+
+    # --- SUGGESTIONS ---
+    st.subheader("💡 Smart Suggestions")
+    overspending = df[df["Expense"] > 0.25 * income]
+    if not overspending.empty:
+        for _, row in overspending.iterrows():
+            st.write(f"⚠️ You’re spending {row['Expense']/income*100:.2f}% on {row['Category']}. Consider reducing this.")
+    else:
+        st.write("✅ Your spending distribution looks healthy!")
