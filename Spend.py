@@ -58,32 +58,32 @@ page = st.sidebar.radio("📂 Navigation", ["Enter Data", "View History", "Predi
 
 # --- MONTH HANDLING ---
 all_months = sorted(set(st.session_state.data.keys()) | {datetime.now().strftime("%Y-%m")})
-selected_month = st.selectbox("📅 Select Month (YYYY-MM)", options=all_months)
+selected_month = st.selectbox("Select Month (YYYY-MM)", options=all_months)
 
 # Allow manual entry of new months
-new_month = st.text_input("🗓️ Add New Month (format: YYYY-MM)", "")
+new_month = st.text_input("Add New Month (format: YYYY-MM)", "")
 if new_month:
     try:
         datetime.strptime(new_month, "%Y-%m")
         if new_month not in st.session_state.data:
             st.session_state.data[new_month] = {"income": 0.0, "expenses": {}}
-            st.success(f"✅ Added new month: {new_month}")
+            st.success(f"Added new month: {new_month}")
             selected_month = new_month
     except ValueError:
-        st.error("❌ Invalid format. Use YYYY-MM (e.g., 2025-10).")
+        st.error("Invalid format. Use YYYY-MM (e.g., 2025-10).")
 
 # --- ENTER DATA PAGE ---
 if page == "Enter Data":
-    st.title("💸 SpendTracker")
+    st.title("SpendTracker")
     st.subheader("Track your income, expenses, and savings — stylish dark edition.")
 
     month_data = st.session_state.data.get(selected_month, {"income": 0.0, "expenses": {}})
 
-    income = st.number_input("💰 Monthly Income",
+    income = st.number_input("Monthly Income",
                              value=float(month_data.get("income", 0.0)),
                              step=100.0, min_value=0.0)
 
-    st.write("### 🧾 Add or Edit Expenses")
+    st.write("### Add or Edit Expenses")
     categories = ["Food", "Rent", "Utilities", "Transport", "Entertainment", "Shopping", "Other"]
 
     expenses = {}
@@ -92,7 +92,7 @@ if page == "Enter Data":
                                              value=float(month_data.get("expenses", {}).get(category, 0.0)),
                                              step=10.0, min_value=0.0, key=f"{selected_month}_{category}")
 
-    if st.button("💾 Save Data"):
+    if st.button("Save Data"):
         st.session_state.data[selected_month] = {"income": income, "expenses": expenses}
         st.success(f"Data saved for {selected_month}!")
 
@@ -106,7 +106,7 @@ if page == "Enter Data":
 
 # --- VIEW HISTORY PAGE ---
 elif page == "View History":
-    st.title("📊 Expense History & Trends")
+    st.title("Expense History & Trends")
 
     if not st.session_state.data:
         st.warning("No data yet. Add at least one month in 'Enter Data'.")
@@ -124,7 +124,7 @@ elif page == "View History":
         df["Savings Rate (%)"] = (df["Savings"] / df["Income"] * 100).round(2)
         st.dataframe(df.set_index("Month"))
 
-        st.write("### 📈 Income vs Expenses Trend")
+        st.write("### Income vs Expenses Trend")
         plt.figure(figsize=(7, 4))
         plt.style.use("dark_background")
         plt.plot(df["Month"], df["Income"], label="Income", marker="o", color="#00FF88")
@@ -136,7 +136,7 @@ elif page == "View History":
 
 # --- PREDICTION PAGE ---
 elif page == "Prediction":
-    st.title("🔮 Next Month’s Expenditure Prediction")
+    st.title("Next Month’s Expenditure Prediction")
 
     if not st.session_state.data:
         st.warning("Add at least 2 months of data for predictions.")
